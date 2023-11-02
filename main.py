@@ -1,11 +1,12 @@
+
 import robomaster
+from robomaster import robot
+import robot_move_actions
 import time
 import robot_distance_actions
-import robot_move_actions
-
 if __name__ == '__main__':
     
-    ep_robot = robomaster.Robot()
+    ep_robot = robot.Robot()
     ep_robot.initialize(conn_type="ap")    
     ep_robot.set_robot_mode(mode=robot.CHASSIS_LEAD)
     robot_move_actions.robot_move_for_period(ep_robot,1,0,0,1)
