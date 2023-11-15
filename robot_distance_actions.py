@@ -47,3 +47,5 @@ def get_distance(robot):
         print('Activate the measurement !')
         return -1
 
+
+print('test')
