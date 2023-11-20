@@ -21,11 +21,14 @@ class PersonInfo:
     @property
     def center(self):
         return int(self._x * 1280), int(self._y * 720)
+    
+
 def on_detect_person(person_info):
     number = len(person_info)
     robots.clear()
     for i in range(0, number):
         x, y, w, h = person_info[i]
+        print(f'Personne détéctée à :{x},{y},{w},{h}')
         robots.append(PersonInfo(x, y, w, h))
         print("robot: x:{0}, y:{1}, w:{2}, h:{3}".format(x, y, w, h))
 
