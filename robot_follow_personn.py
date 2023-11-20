@@ -49,5 +49,11 @@ def show_follow_result(ep_robot):
     cv2.destroyAllWindows()
     ep_vision.unsub_detect_info(name="robot")
     cv2.destroyAllWindows()
+    print(ep_vision.get_version())
     ep_camera.stop_video_stream()
     ep_robot.close()
+
+def to_degrees(x_position):
+    rotation = 0
+    rotation = x_position/10
+    return rotation
