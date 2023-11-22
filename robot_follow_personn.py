@@ -60,11 +60,10 @@ def to_degrees(x_position):
 
 def follow_personn(ep_robot):
     ep_vision = ep_robot.vision
-    ep_camera = ep_robot.camera
     ep_vision.sub_detect_info(name="person", callback=on_detect_person)
-    for personn in robots:
-        print(f'Point détécté : {personn.pt1[0]}')
-        rotation = to_degrees(personn.pt1[0])
+    personn = robots[0]
+    print(f'Point détécté : {personn.pt1[0]}')
+    rotation = to_degrees(personn.pt1[0])
     return rotation
         
     
