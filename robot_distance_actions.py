@@ -47,5 +47,52 @@ def get_distance(robot):
         print('Activate the measurement !')
         return -1
 
+# Variables pour stocker la position avant et après le mouvement
+position_x = 0
+success_start = None
+position_started = False
 
-print('test')
+def position_callback(position_info):
+    x, y, z = position_info
+    print(f"Position data - X: {x}, Y: {y}, Z: {z}")
+    # Utiliser les variables globales pour stocker la position avant et après le mouvement
+    global position_x
+    position_x = x
+    # print(f'position courante : {position_x}')
+    # Imprimer les données de position
+    
+
+def stop_position_measurement(robot):
+    global position_started
+    chassis = robot.chassis
+    try:
+        chassis.unsub_position()
+        position_started = False
+    except Exception as e:
+        print(f"Error stopping position measurement: {e}")
+
+position_x_initial = 0  # Ajoutez cette variable globale
+
+def start_position_measurement(robot, freq=5):
+    global position_started, position_x_initial  # Ajoutez position_x_initial
+    chassis = robot.chassis
+    try:
+        # S'abonner aux données de position avec une fréquence spécifiée
+        success = chassis.sub_position(freq=freq, callback=position_callback)
+        if success:
+            print('yes')
+            # Stocker la position initiale
+            position_x_initial=0
+            # Attendre un certain temps pour recevoir des données de position
+            position_started = True
+        else:
+            print("Failed to subscribe to position data.")
+    except Exception as e:
+        print(f"Error during position subscription: {e}")
+
+def get_position_data(robot):
+    global position_x, position_started
+    if position_started:
+        return position_x
+    else:
+        print('Activate the position measurement!')
