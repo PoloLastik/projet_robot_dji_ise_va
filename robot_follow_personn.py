@@ -1,7 +1,8 @@
 import cv2
 from robomaster import robot
 robots = []
-
+area_min = 0.13
+area_max = 0.18
 class PersonInfo:
 
     def __init__(self, x, y, w, h):
@@ -22,6 +23,9 @@ class PersonInfo:
     def center(self):
         return int(self._x * 1280), int(self._y * 720)
     
+    @property
+    def area(self):
+        return self._w * self._h
 
 def on_detect_person(person_info):
     global robots
@@ -65,12 +69,23 @@ def activate_follow_personn(ep_robot):
 def deactivate_follow_personn(ep_robot):
     ep_vision = ep_robot.vision
     ep_vision.unsub_detect_info(name='personn')
-    
+
+def to_translation(X):
+    returned_value = 0
+    if area_max < X:
+        returned_value = -0.5
+    elif area_min > X:
+        returned_value = 0.5
+    else: 
+        returned_value = 0
+    return returned_value
+
 def follow_personn(ep_robot):
     global robots
+    X = 0
     personn = robots[0] if len(robots)>0 else PersonInfo(0.5,0,0,0)
     # print(f'Point détécté : {personn.pt1[0]}')
     rotation = to_degrees(personn._x)
-    return rotation
-        
-    
+    trans = to_translation(personn.area)
+    print(f'Area:{personn.area}')
+    return rotation, trans
