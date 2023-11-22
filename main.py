@@ -1,7 +1,4 @@
-
-import robomaster
 from robomaster import robot
-import robot_move_actions
 import time
 import robot_distance_actions
 import robot_move_actions_unblocked
