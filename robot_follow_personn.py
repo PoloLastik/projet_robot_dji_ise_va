@@ -24,13 +24,13 @@ class PersonInfo:
     
 
 def on_detect_person(person_info):
+    global robots
     number = len(person_info)
     robots.clear()
     for i in range(0, number):
         x, y, w, h = person_info[i]
         print(f'Personne détéctée à :{x},{y},{w},{h}')
         robots.append(PersonInfo(x, y, w, h))
-        print("robot: x:{0}, y:{1}, w:{2}, h:{3}".format(x, y, w, h))
 
 def show_follow_result(ep_robot):
 
@@ -55,12 +55,19 @@ def show_follow_result(ep_robot):
 
 def to_degrees(x_position):
     rotation = 0
-    rotation = x_position/10
+    rotation = x_position*180 - 90 # Regarder le rapport, ici pour une range [-1;1]
     return rotation
 
-def follow_personn(ep_robot):
+def activate_follow_personn(ep_robot):
     ep_vision = ep_robot.vision
     ep_vision.sub_detect_info(name="person", callback=on_detect_person)
+
+def deactivate_follow_personn(ep_robot):
+    ep_vision = ep_robot.vision
+    ep_vision.unsub_detect_info(name='personn')
+    
+def follow_personn(ep_robot):
+    global robots
     personn = robots[0]
     print(f'Point détécté : {personn.pt1[0]}')
     rotation = to_degrees(personn.pt1[0])
