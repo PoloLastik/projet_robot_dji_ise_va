@@ -12,6 +12,9 @@ if __name__ == '__main__':
     ep_robot.initialize(conn_type="ap")    
     ep_robot.set_robot_mode(mode=robot.CHASSIS_LEAD)
     print('initialized')
+    while input('Ready ? ')!='yes':
+        print('Ok, waiting...')
+        pass
     print('Try to follow')
     print(robot_follow_personn.follow_personn())
     time.sleep(60)
