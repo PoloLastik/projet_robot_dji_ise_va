@@ -29,7 +29,7 @@ def on_detect_person(person_info):
     robots.clear()
     for i in range(0, number):
         x, y, w, h = person_info[i]
-        print(f'Personne détéctée à :{x},{y},{w},{h}')
+        # print(f'Personne détéctée à :{x},{y},{w},{h}')
         robots.append(PersonInfo(x, y, w, h))
 
 def show_follow_result(ep_robot):
@@ -68,9 +68,9 @@ def deactivate_follow_personn(ep_robot):
     
 def follow_personn(ep_robot):
     global robots
-    personn = robots[0]
-    print(f'Point détécté : {personn.pt1[0]}')
-    rotation = to_degrees(personn.pt1[0])
+    personn = robots[0] if len(robots)>0 else PersonInfo(0.5,0,0,0)
+    # print(f'Point détécté : {personn.pt1[0]}')
+    rotation = to_degrees(personn._x)
     return rotation
         
     
