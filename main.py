@@ -1,6 +1,7 @@
 # Imports
 
 from robomaster import robot
+import robomaster
 import time
 import robot_distance_actions
 import robot_move_actions_unblocked
@@ -12,10 +13,16 @@ import robot_move_actions
 ROBOT_STRAIGHT_STANDARD_SPEED_X = 0.3
 
 def wait_for_launch():
+    """Lance une boucle infinie pour lancer le programme
+    """
     while input('Ready ? ')!='yes':
         print('Ok, waiting...')
         pass
+
 def instantiate_robot():
+    """
+    Instancie le robot et le retourne.    
+    """
     ep_robot = robot.Robot()
     ep_robot.initialize(conn_type="ap")    
     ep_robot.set_robot_mode(mode=robot.CHASSIS_LEAD)
@@ -33,17 +40,21 @@ def robot_find_wayout(ep_robot):
     """
     wayout = ''
     print('Moving to right...')
-    ep_robot.chassis.move(0,0,900)
-    robot_distance_actions.start_distance_measurement(ep_robot)
+    ep_chassis:robomaster.robot.chassis
+    ep_chassis = ep_robot.chassis
+    ep_chassis.move(0,0,-90).wait_for_completed()
+        
     print('Measuring...')
     distance_right = robot_distance_actions.get_distance(ep_robot)
     print(distance_right)
     print('Moving to left...')
-    ep_robot.chassis.move(0,0,-1800)
+    ep_chassis.move(0,0,90).wait_for_completed()
+    # ep_chassis.move(0,0,90).wait_for_completed()
+
     print('Measuring...')
     distance_left = robot_distance_actions.get_distance(ep_robot)
     print(distance_left)
-    ep_robot.chassis.move(0,0,900)
+    ep_chassis.move(0,0,90,0.5).wait_for_completed()
     if not (distance_right and distance_left and distance_right>0 and distance_left>0):
         wayout = 'error'
     elif distance_right>distance_left:
@@ -103,6 +114,7 @@ if __name__ == '__main__':
     
     ep_robot = instantiate_robot()
     wait_for_launch()
+    robot_distance_actions.start_distance_measurement(ep_robot)
     robot_move_actions_unblocked.robot_move_until_threshold(ep_robot,ROBOT_STRAIGHT_STANDARD_SPEED_X,0,0,300)
     wyaout = robot_find_wayout(ep_robot)
     print('Wayout :' + wyaout)
