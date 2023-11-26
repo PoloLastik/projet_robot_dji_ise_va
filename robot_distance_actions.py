@@ -54,7 +54,7 @@ position_started = False
 
 def position_callback(position_info):
     x, y, z = position_info
-    print(f"Position data - X: {x}, Y: {y}, Z: {z}")
+    # print(f"Position data - X: {x}, Y: {y}, Z: {z}")
     # Utiliser les variables globales pour stocker la position avant et après le mouvement
     global position_x
     position_x = x
