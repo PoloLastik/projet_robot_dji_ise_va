@@ -68,7 +68,33 @@ def robot_find_wayout(ep_robot):
     else:wayout = 'None'
     return wayout
 
+def move_until_threshold_with_obstacle_avoidance(ep_robot,position_threshold):
+    """Réalise un parcours de 10m avec évitement des obstacles
 
+    Args:
+        ep_robot (Robot): Robot Concerné
+    """
+    print('Départ du parcours...')
+    ep_chassis = robot.chassis
+    robot_distance_actions.start_distance_measurement(ep_robot)
+    robot_distance_actions.start_position_measurement(ep_robot)
+    position = robot_distance_actions.get_position_data(robot)
+    while(position<position_threshold):
+        robot_move_actions.robot_move(ep_robot,X=ROBOT_STRAIGHT_STANDARD_SPEED_X, Y=0,Z=0)
+        distance = robot_distance_actions.get_distance(ep_robot)
+        if distance <=300:
+            robot_move_actions.robot_stop(ep_robot,X=ROBOT_STRAIGHT_STANDARD_SPEED_X, Y=0,Z=0)
+            wayout = robot_find_wayout(ep_robot=ep_robot)
+            if wayout=='right':
+                robot_move_actions.robot_distance_move(ep_robot,0,0.6,0)
+            elif wayout=='left':            
+                robot_move_actions.robot_distance_move(ep_robot,0,-0.6,0)
+            else:
+                print('No wayout found !')
+                robot_move_actions.robot_move(ep_robot,0.5,0,0)
+        position = robot_distance_actions.get_position_data(ep_robot)
+            
+            
 def robot_move_until():
     try:
         ep_robot = robot.Robot()
