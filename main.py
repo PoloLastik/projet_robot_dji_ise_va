@@ -54,7 +54,7 @@ def robot_find_wayout(ep_robot):
     print('Measuring...')
     distance_left = robot_distance_actions.get_distance(ep_robot)
     print(distance_left)
-    ep_chassis.move(0,0,90,0.5).wait_for_completed()
+    ep_chassis.move(0,0,90).wait_for_completed()
     if not (distance_right and distance_left and distance_right>0 and distance_left>0):
         wayout = 'error'
     elif distance_right>distance_left:
@@ -115,7 +115,10 @@ if __name__ == '__main__':
     ep_robot = instantiate_robot()
     wait_for_launch()
     robot_distance_actions.start_distance_measurement(ep_robot)
-    robot_move_actions_unblocked.robot_move_until_threshold(ep_robot,ROBOT_STRAIGHT_STANDARD_SPEED_X,0,0,300)
+    # robot_move_actions_unblocked.robot_move_until_threshold(ep_robot,ROBOT_STRAIGHT_STANDARD_SPEED_X,0,0,300)
+    robot_move_actions.robot_move(ep_robot,1,0,0)
+    time.sleep(1)
+    robot_move_actions.robot_stop(ep_robot,1,0,0) # L'utilisation simultanée de drive_speed et robot.move est incompatible askip
     wyaout = robot_find_wayout(ep_robot)
     print('Wayout :' + wyaout)
     print('Done !')
