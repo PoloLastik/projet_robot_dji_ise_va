@@ -3,6 +3,8 @@ import time
 import traceback
 
 DEFAULT_ROBOT_SPEED_XY=0.4
+MOVE_FACTOR_Y = 1
+MOVE_FACTOR_X = 1
 
 def robot_move(robot, X, Y, Z):
     ep_chassis = robot.chassis
@@ -21,6 +23,7 @@ def robot_distance_move(robot, x=0 , y=0 , z=0 , xy_speed=0.6 , z_speed=80):
     if x!=0 or y!=0:
         time_y = y/DEFAULT_ROBOT_SPEED_XY
         time_x = x/DEFAULT_ROBOT_SPEED_XY
+        time_x, time_y = time_x*MOVE_FACTOR_X, time_y*MOVE_FACTOR_Y
         robot_move_while(robot,x,0,0,time_x)
         robot_move_while(robot,0,y,0,time_y)
     
