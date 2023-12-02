@@ -85,9 +85,9 @@ def move_until_threshold_with_obstacle_avoidance(ep_robot,position_threshold):
             robot_move_actions.robot_stop(ep_robot,X=ROBOT_STRAIGHT_STANDARD_SPEED_X, Y=0,Z=0)
             wayout = robot_find_wayout(ep_robot=ep_robot)
             if wayout=='right':
-                robot_move_actions.robot_distance_move(ep_robot,0,0.6,0)
+                robot_move_actions.robot_distance_move(ep_robot,0,0.4,0)
             elif wayout=='left':            
-                robot_move_actions.robot_distance_move(ep_robot,0,-0.6,0)
+                robot_move_actions.robot_distance_move(ep_robot,0,-0.4,0)
             else:
                 print('No wayout found !')
                 robot_move_actions.robot_move(ep_robot,0.5,0,0)
@@ -139,21 +139,8 @@ def robot_move_until():
         # Fermer la connexion du robot
         ep_robot.close()
 
-def progressively_shift(ep_robot,direction):
-    if direction == 'right':
-        move_to = 0.55
-    elif direction == 'left':
-        move_to = -0.55
-    else:
-        return -1
-    for i in range(3):
-        robot_move_actions.robot_distance_move(ep_robot,0,0.1,0)
-        distance = robot_distance_actions.get_distance(ep_robot)
-        if distance>300:
-            robot_move_actions.robot_distance_move(ep_robot,0,ROBOT_WEIGHT/2,0)
 
-            break
-        else:continue
+
 
 if __name__ == '__main__':
     
