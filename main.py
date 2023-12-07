@@ -75,23 +75,36 @@ def move_until_threshold_with_obstacle_avoidance(ep_robot,position_threshold):
     """
     print('Départ du parcours...')
     ep_chassis = robot.chassis
+    position_threshold = 2.5
+    move_to_right = 0.4
+    move_to_left = -0.4
+    ep_chassis = robot.chassis
     robot_distance_actions.start_distance_measurement(ep_robot)
     robot_distance_actions.start_position_measurement(ep_robot)
     position = robot_distance_actions.get_position_data(robot)
     while(position<position_threshold):
+        print("1- Moving on !")
         robot_move_actions.robot_move(ep_robot,X=ROBOT_STRAIGHT_STANDARD_SPEED_X, Y=0,Z=0)
+        print('2- Measuring !')
         distance = robot_distance_actions.get_distance(ep_robot)
-        if distance <=300:
+        print(f'3- Distance front :{distance}')
+        if distance <=400:
+            print('4- Distance front straight !')
             robot_move_actions.robot_stop(ep_robot,X=ROBOT_STRAIGHT_STANDARD_SPEED_X, Y=0,Z=0)
             wayout = robot_find_wayout(ep_robot=ep_robot)
             if wayout=='right':
-                robot_move_actions.robot_distance_move(ep_robot,0,0.4,0)
-            elif wayout=='left':            
-                robot_move_actions.robot_distance_move(ep_robot,0,-0.4,0)
+                print('5- Moving to right !')
+                robot_move_actions.robot_distance_move(ep_robot,0,move_to_right,0)
+            elif wayout=='left':
+                print('6- Moving to left !')
+           
+                robot_move_actions.robot_distance_move(ep_robot,0,move_to_left,0)
             else:
                 print('No wayout found !')
                 robot_move_actions.robot_move(ep_robot,0.5,0,0)
         position = robot_distance_actions.get_position_data(ep_robot)
+        print(f'7- Position:{position}')
+    print('Stop !')
   
             
 def robot_move_until():
@@ -139,42 +152,19 @@ def robot_move_until():
         # Fermer la connexion du robot
         ep_robot.close()
 
-
+def follow_personn_loop(ep_robot):
+    robot_follow_personn.activate_follow_personn(ep_robot)
+    while True:
+        rotation,translation = robot_follow_personn.follow_personn(ep_robot=ep_robot)
+        robot_move_actions.robot_move(ep_robot,translation,0,rotation)
+        # robot_move_actions.robot_move(ep_robot,0,0,rotation)
+        time.sleep(0.3)
+    
 
 
 if __name__ == '__main__':
     
     ep_robot = instantiate_robot()
     wait_for_launch()
-    print('Départ du parcours...')
-    position_threshold = 2.5
-    move_to_right = -0.3
-    move_to_left = 0.3
-    ep_chassis = robot.chassis
-    robot_distance_actions.start_distance_measurement(ep_robot)
-    robot_distance_actions.start_position_measurement(ep_robot)
-    position = robot_distance_actions.get_position_data(robot)
-    while(position<position_threshold):
-        print("1- Moving on !")
-        robot_move_actions.robot_move(ep_robot,X=ROBOT_STRAIGHT_STANDARD_SPEED_X, Y=0,Z=0)
-        print('2- Measuring !')
-        distance = robot_distance_actions.get_distance(ep_robot)
-        print(f'3- Distance front :{distance}')
-        if distance <=300:
-            print('4- Distance front straight !')
-            robot_move_actions.robot_stop(ep_robot,X=ROBOT_STRAIGHT_STANDARD_SPEED_X, Y=0,Z=0)
-            wayout = robot_find_wayout(ep_robot=ep_robot)
-            if wayout=='right':
-                print('5- Moving to right !')
-                robot_move_actions.robot_distance_move(ep_robot,0,move_to_right,0)
-            elif wayout=='left':
-                print('6- Moving to left !')
-           
-                robot_move_actions.robot_distance_move(ep_robot,0,move_to_left,0)
-            else:
-                print('No wayout found !')
-                robot_move_actions.robot_move(ep_robot,0.5,0,0)
-        position = robot_distance_actions.get_position_data(ep_robot)
-        print(f'7- Position:{position}')
-    print('Stop !')
+    follow_personn_loop(ep_robot)
     ep_robot.close()

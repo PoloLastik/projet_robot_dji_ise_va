@@ -3,6 +3,8 @@ from robomaster import robot
 robots = []
 area_min = 0.13
 area_max = 0.18
+
+
 class PersonInfo:
 
     def __init__(self, x, y, w, h):
