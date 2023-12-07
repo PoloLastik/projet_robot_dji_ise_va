@@ -1,8 +1,8 @@
 import cv2
 from robomaster import robot
 robots = []
-area_min = 0.13
-area_max = 0.18
+area_min = 0.15
+area_max = 0.17
 
 
 class PersonInfo:
@@ -43,7 +43,7 @@ def show_follow_result(ep_robot):
     ep_vision = ep_robot.vision
     ep_camera = ep_robot.camera
 
-    ep_camera.start_video_stream(display=False)
+    ep_camera.start_video_stream(display=True)
     ep_vision.sub_detect_info(name="person", callback=on_detect_person)
 
     for i in range(0, 500):
@@ -75,9 +75,9 @@ def deactivate_follow_personn(ep_robot):
 def to_translation(X):
     returned_value = 0
     if area_max < X:
-        returned_value = -0.5
+        returned_value = -0.3
     elif area_min > X:
-        returned_value = 0.5
+        returned_value = 0.3
     else: 
         returned_value = 0
     return returned_value
@@ -85,7 +85,7 @@ def to_translation(X):
 def follow_personn(ep_robot):
     global robots
     X = 0
-    personn = robots[0] if len(robots)>0 else PersonInfo(0.5,0,0,0)
+    personn = robots[0] if len(robots)>0 else PersonInfo(0.5,0,0.4,0.4)
     # print(f'Point détécté : {personn.pt1[0]}')
     rotation = to_degrees(personn._x)
     trans = to_translation(personn.area)

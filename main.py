@@ -7,7 +7,7 @@ import robot_distance_actions
 import robot_move_actions_unblocked
 import robot_follow_personn
 import robot_move_actions
-
+import cv2
 # Constant
 
 ROBOT_STRAIGHT_STANDARD_SPEED_X = 0.3
@@ -15,9 +15,15 @@ ROBOT_WEIGHT  = 0.3
 def wait_for_launch():
     """Lance une boucle infinie pour lancer le programme
     """
-    while input('Ready ? ')!='yes':
+    input_a = ""
+    started = True
+    while input_a!='yes' and input_a!='stop':
+        input_a =  input('Ready ? ')
         print('Ok, waiting...')
+        if input_a == 'stop':
+            started = False
         pass
+    return started
 
 def instantiate_robot():
     """
@@ -155,16 +161,25 @@ def robot_move_until():
 def follow_personn_loop(ep_robot):
     robot_follow_personn.activate_follow_personn(ep_robot)
     while True:
+
         rotation,translation = robot_follow_personn.follow_personn(ep_robot=ep_robot)
         robot_move_actions.robot_move(ep_robot,translation,0,rotation)
-        # robot_move_actions.robot_move(ep_robot,0,0,rotation)
-        time.sleep(0.3)
     
-
+def tageuele(person):
+    pass
 
 if __name__ == '__main__':
     
     ep_robot = instantiate_robot()
-    wait_for_launch()
-    follow_personn_loop(ep_robot)
+    camera = ep_robot.camera
+    camera.start_video_stream()
+    if wait_for_launch():
+        follow_personn_loop(ep_robot)
+
+    camera.stop_video_stream()
     ep_robot.close()
+        
+        
+
+        
+        
