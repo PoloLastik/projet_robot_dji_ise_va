@@ -10,7 +10,7 @@ import robot_move_actions
 import cv2
 # Constant
 
-ROBOT_STRAIGHT_STANDARD_SPEED_X = 0.3
+ROBOT_STRAIGHT_STANDARD_SPEED_X = 0.45
 ROBOT_WEIGHT  = 0.3
 def wait_for_launch():
     """Lance une boucle infinie pour lancer le programme
@@ -34,6 +34,32 @@ def instantiate_robot():
     ep_robot.set_robot_mode(mode=robot.CHASSIS_LEAD)
     print('Robot Initialized...')
     return ep_robot
+
+def robot_find_wayout_after(ep_robot):
+    ep_chassis = ep_robot.chassis
+    angle = 25
+    threshold = 400
+    robot_move_actions.robot_distance_move(ep_robot,0,0,-angle)
+    distance_right = robot_distance_actions.get_distance(ep_robot)
+    robot_move_actions.robot_distance_move(ep_robot,0,0,angle)
+    robot_move_actions.robot_distance_move(ep_robot,0,0,angle)
+
+    print('Measuring...')
+    distance_left = robot_distance_actions.get_distance(ep_robot)
+    print(distance_left)
+    
+    robot_move_actions.robot_distance_move(ep_robot,0,0,-angle)
+
+    # ep_chassis.move(0,0,90).wait_for_completed()
+    if not (distance_right and distance_left and distance_right>0 and distance_left>0):
+        wayout = 'error'
+    elif distance_right<threshold or distance_left<threshold:
+        wayout = 'shift'
+    elif distance_right>threshold and distance_left>threshold:
+        wayout = 'straight'
+
+    return wayout
+
 
 def robot_find_wayout(ep_robot):
     """Trouve le coté correct pour se décaler dans l'évitement d'un obstacle.
@@ -71,6 +97,7 @@ def robot_find_wayout(ep_robot):
     elif distance_left>distance_right:
         wayout = 'left'
     else:wayout = 'None'
+
     return wayout
 
 def move_until_threshold_with_obstacle_avoidance(ep_robot,position_threshold):
@@ -81,17 +108,19 @@ def move_until_threshold_with_obstacle_avoidance(ep_robot,position_threshold):
     """
     print('Départ du parcours...')
     ep_chassis = robot.chassis
-    position_threshold = 8
+    position_threshold = 9
     move_to_right = 0.45
     move_to_left = -0.45
     ep_chassis = robot.chassis
     robot_distance_actions.start_distance_measurement(ep_robot)
     robot_distance_actions.start_position_measurement(ep_robot)
     position = 0
-    while(position<position_threshold):
+    # while(position<position_threshold or position>-position_threshold):
+    while(position>-position_threshold):
+
         robot_move_actions.robot_move(ep_robot,X=ROBOT_STRAIGHT_STANDARD_SPEED_X, Y=0,Z=0)
         distance = robot_distance_actions.get_distance(ep_robot)
-        if distance <=400:
+        if distance <=500:
             robot_move_actions.robot_stop(ep_robot,X=ROBOT_STRAIGHT_STANDARD_SPEED_X, Y=0,Z=0)
             wayout = robot_find_wayout(ep_robot=ep_robot)
             if wayout=='right':
@@ -100,8 +129,20 @@ def move_until_threshold_with_obstacle_avoidance(ep_robot,position_threshold):
                 robot_move_actions.robot_distance_move(ep_robot,0,move_to_left,0)
             else:
                 robot_move_actions.robot_move(ep_robot,0.5,0,0)
-        position = robot_distance_actions.get_position_data(ep_robot)
-        position = abs(position)
+            
+            #Modification
+            after_wayout = robot_find_wayout_after(ep_robot)
+            if after_wayout =='shift':
+                if wayout=='right':
+                    robot_move_actions.robot_distance_move(ep_robot,0,move_to_right*0.75,0)
+                elif wayout=='left':           
+                    robot_move_actions.robot_distance_move(ep_robot,0,move_to_left*0.75,0)
+            elif after_wayout == 'straight':
+                continue
+            #Modification fin
+
+        else:position = robot_distance_actions.get_position_data(ep_robot)
+        position = position * (position/position) if position !=0 else 0
 
         print(f'7- Position:{position}')
     print('Stop !')
